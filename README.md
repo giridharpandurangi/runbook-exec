@@ -1,5 +1,7 @@
 # runbook-exec
 
+[![PyPI version](https://img.shields.io/pypi/v/runbook-exec.svg)](https://pypi.org/project/runbook-exec/)
+
 > **Status**: v0.1.0 — initial release. Core functionality validated end-to-end. Slack approval workflow tested with mocks; production Slack testing pending.
 
 AI-driven CLI tool that transforms passive Markdown runbooks into executable automation with safety gates and audit trails.
@@ -9,16 +11,6 @@ At incident time (e.g., 3 AM), instead of a human manually following a runbook s
 ## Quickstart
 
 ### 1. Install
-
-Until v0.1.0 ships to PyPI, install from source:
-
-```bash
-git clone https://github.com/<your-username>/runbook-exec.git
-cd runbook-exec
-pip install -e .
-```
-
-Once published, you'll be able to:
 
 ```bash
 pip install runbook-exec
@@ -246,4 +238,14 @@ pytest --cov=runbook_exec --cov-report=term-missing
 
 # Lint
 ruff check .
+```
+
+## Install from source (development)
+
+To contribute or run from a local clone:
+
+```bash
+git clone https://github.com/giridharpandurangi/runbook-exec.git
+cd runbook-exec
+pip install -e ".[dev]"
 ```
