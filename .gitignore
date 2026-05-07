@@ -1,0 +1,46 @@
+# Audit logs — runtime output, never committed
+runbook-exec-logs/
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.Python
+
+# Virtual environments
+.venv/
+venv/
+env/
+
+# Build / distribution
+dist/
+build/
+*.egg-info/
+*.egg
+
+# Test / coverage
+.pytest_cache/
+.coverage
+htmlcov/
+.hypothesis/
+
+# Linter cache
+.ruff_cache/
+
+# Editor / OS
+.DS_Store
+*.swp
+*.swo
+.vscode/
+.idea/
+*.iml
+
+# Secrets / credentials — never commit these
+.env
+.env.local
+*.key
+*.pem
+
+# Test install scratch directory
+test-install/
