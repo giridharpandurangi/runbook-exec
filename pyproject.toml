@@ -4,12 +4,12 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "runbook-exec"
-version = "0.2.1"
-description = "AI-driven CLI tool that transforms Markdown runbooks into executable automation with safety gates and audit trails"
+version = "0.2.2"
+description = "AI-driven CLI tool and MCP server that transforms Markdown runbooks into executable automation with safety gates and audit trails"
 readme = "README.md"
 requires-python = ">=3.11"
 license = { text = "MIT" }
-keywords = ["runbook", "automation", "incident-response", "cli", "llm"]
+keywords = ["runbook", "automation", "incident-response", "cli", "llm", "mcp", "claude"]
 classifiers = [
     "Development Status :: 4 - Beta",
     "Intended Audience :: Developers",
