@@ -1,33 +1,37 @@
-name: Validate Runbooks
+name: Validate runbooks
 
 on:
   pull_request:
     paths:
-      - "examples/**/*.md"
-      - "examples/*.md"
+      - 'runbooks/**/*.md'
+      - 'docs/runbooks/**/*.md'
 
 jobs:
   validate:
-    name: Validate example runbooks
+    name: Validate changed runbooks
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # needed for git diff against origin/main
 
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: "3.11"
+          python-version: '3.11'
 
       - name: Install runbook-exec
-        run: pip install -e ".[dev]"
+        run: pip install runbook-exec
 
-      - name: Validate all example runbooks
+      - name: Validate all changed runbooks
         env:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
         run: |
-          for f in examples/*.md; do
-            echo "Validating $f..."
-            runbook-exec validate "$f"
-          done
+          changed=$(git diff --name-only origin/main...HEAD | grep '\.md$' || true)
+          if [ -z "$changed" ]; then
+            echo "No Markdown files changed — nothing to validate."
+            exit 0
+          fi
+          echo "$changed" | xargs -I{} runbook-exec validate {}

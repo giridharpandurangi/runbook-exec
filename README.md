@@ -16,17 +16,50 @@ At incident time (e.g., 3 AM), instead of a human manually following a runbook s
 pip install runbook-exec
 ```
 
+### Windows users
+
+On Windows, always install inside a virtual environment to ensure the `runbook-exec` command is available in your PATH:
+
+```cmd
+python -m venv venv
+venv\Scripts\activate
+pip install runbook-exec
+runbook-exec --help
+```
+
+If you see `'runbook-exec' is not recognized as an internal or external command`, you are not inside an active virtual environment. Run `venv\Scripts\activate` first.
+
 ### Free Anthropic credits
 
 New Anthropic accounts get $5 in free credits at [console.anthropic.com](https://console.anthropic.com) — enough for hundreds of `runbook-exec validate` runs.
 
 ### 2. Set environment variables
 
+**Linux / macOS:**
+
 ```bash
 export ANTHROPIC_API_KEY=sk-ant-...          # Required
 export SLACK_BOT_TOKEN=xoxb-...              # Required for approval workflow
 export SLACK_APP_TOKEN=xapp-...              # Required for Socket Mode
 ```
+
+**Windows CMD:**
+
+```cmd
+set ANTHROPIC_API_KEY=sk-ant-...
+set SLACK_BOT_TOKEN=xoxb-...
+set SLACK_APP_TOKEN=xapp-...
+```
+
+**Windows PowerShell:**
+
+```powershell
+$env:ANTHROPIC_API_KEY = "sk-ant-..."
+$env:SLACK_BOT_TOKEN = "xoxb-..."
+$env:SLACK_APP_TOKEN = "xapp-..."
+```
+
+> These commands set variables for the current terminal session only. For permanent configuration on Windows, add them via Control Panel → System → Advanced → Environment Variables.
 
 ### 3. Run an example runbook
 
@@ -194,31 +227,48 @@ Audit log files are never committed to source control (`.gitignore` includes `ru
 
 ## CI/CD integration
 
-Add runbook validation to your PR checks using the included GitHub Action:
+Use `runbook-exec validate` in PR checks to lint runbooks before they merge — catching broken formatting, missing commands, and classification failures before they reach an on-call engineer at 3 AM.
 
 ```yaml
-# .github/workflows/validate.yml
-name: Validate Runbooks
+# .github/workflows/validate-runbooks.yml
+name: Validate runbooks
+
 on:
   pull_request:
     paths:
-      - "examples/**/*.md"
+      - 'runbooks/**/*.md'
+      - 'docs/runbooks/**/*.md'
 
 jobs:
   validate:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+
       - uses: actions/setup-python@v5
         with:
-          python-version: "3.11"
+          python-version: '3.11'
+
       - run: pip install runbook-exec
-      - run: runbook-exec validate examples/disk-full.md
+
+      - name: Validate all changed runbooks
         env:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: |
+          git diff --name-only origin/main...HEAD \
+            | grep '\.md$' \
+            | xargs -I{} runbook-exec validate {}
 ```
 
-The workflow fails if `runbook-exec validate` exits with a non-zero code.
+This only validates runbooks that were actually changed in the PR, not every runbook on every commit. The `ANTHROPIC_API_KEY` secret must be configured in your repository settings.
+
+**What validation catches:**
+- Markdown that fails to parse (broken formatting)
+- Steps with no extracted command (`command=None`)
+- LLM classification failures (malformed step text)
+- Steps that would be silently skipped during a real execution
+
+**What validation does not do:** execute any commands or connect to any infrastructure. It is safe to run on any CI machine.
 
 ## Example runbook
 
