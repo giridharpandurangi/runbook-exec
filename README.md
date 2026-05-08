@@ -2,7 +2,7 @@
 
 [![PyPI version](https://img.shields.io/pypi/v/runbook-exec.svg)](https://pypi.org/project/runbook-exec/)
 
-> **Status**: v0.2.0 — adds MCP server for Claude Desktop integration. v0.1.1 fixes: markdown-fence stripping, Slack terminal fallback, correct model name, Windows docs.
+> **Status**: v0.2.1 — Beta. MCP server for Claude Desktop, markdown-fence fixes, Slack terminal fallback, Windows docs.
 
 AI-driven CLI tool that transforms passive Markdown runbooks into executable automation with safety gates and audit trails.
 
