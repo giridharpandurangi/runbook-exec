@@ -380,4 +380,3 @@ def test_version_flag_prints_version() -> None:
 
     assert result.exit_code == 0
     assert __version__ in result.output
-    assert "0.1.0" in result.output

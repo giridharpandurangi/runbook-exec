@@ -2,7 +2,7 @@
 
 [![PyPI version](https://img.shields.io/pypi/v/runbook-exec.svg)](https://pypi.org/project/runbook-exec/)
 
-> **Status**: v0.1.0 — initial release. Core functionality validated end-to-end. Slack approval workflow tested with mocks; production Slack testing pending.
+> **Status**: v0.2.0 — adds MCP server for Claude Desktop integration. v0.1.1 fixes: markdown-fence stripping, Slack terminal fallback, correct model name, Windows docs.
 
 AI-driven CLI tool that transforms passive Markdown runbooks into executable automation with safety gates and audit trails.
 
@@ -273,6 +273,53 @@ This only validates runbooks that were actually changed in the PR, not every run
 ## Example runbook
 
 See [`examples/disk-full.md`](examples/disk-full.md) for a realistic disk-full incident runbook with a mix of `read_only`, `modifying`, and `destructive` steps.
+
+## Use with Claude Desktop
+
+`runbook-exec` can run as an MCP server, letting Claude Desktop execute runbooks through natural conversation — no terminal required.
+
+### Install and configure
+
+Add to your Claude Desktop config file:
+
+**macOS:** `~/Library/Application Support/Claude/claude_desktop_config.json`
+**Windows:** `%APPDATA%\Claude\claude_desktop_config.json`
+
+```json
+{
+  "mcpServers": {
+    "runbook-exec": {
+      "command": "runbook-exec",
+      "args": ["mcp-server"],
+      "env": {
+        "ANTHROPIC_API_KEY": "sk-ant-...",
+        "SLACK_BOT_TOKEN": "xoxb-...",
+        "SLACK_APP_TOKEN": "xapp-..."
+      }
+    }
+  }
+}
+```
+
+Restart Claude Desktop. The runbook-exec tools will appear automatically.
+
+### Example conversations
+
+> "Validate the disk-full runbook at /runbooks/disk-full.md"
+
+> "Dry-run our deployment runbook and show me what would need approval"
+
+> "Show me what happened during last night's incident from the audit log"
+
+> "Run the disk-full runbook for real" ← Claude will pause at each risky step and ask for your approval before continuing
+
+### Safety
+
+- `execute_runbook` defaults to `dry_run=True` — Claude cannot execute real commands unless you explicitly say "run for real" or "not dry-run"
+- All approval gates apply: `modifying` and `destructive` steps always require your explicit approval, whether called from CLI or Claude
+- Full audit log written for every execution, including MCP-initiated runs
+- If Slack is configured, approvals go to Slack as normal
+- If Slack is not configured, Claude handles approvals conversationally: it shows you the pending step, waits for "yes/go ahead", then resumes
 
 ## Development
 

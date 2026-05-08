@@ -128,3 +128,10 @@ def replay(
     except RunbookExecError as exc:
         display.show_error(str(exc))
         raise typer.Exit(1)
+
+
+@app.command(name="mcp-server")
+def mcp_server() -> None:
+    """Start runbook-exec as an MCP server (for Claude Desktop / Cursor)."""
+    from runbook_exec.mcp_server import main as _mcp_main
+    _mcp_main()
